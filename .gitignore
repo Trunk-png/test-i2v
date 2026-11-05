@@ -1,0 +1,8 @@
+models/
+input/
+output/
+data/*.xlsx
+secrets/*.json
+__pycache__/
+*.pyc
+

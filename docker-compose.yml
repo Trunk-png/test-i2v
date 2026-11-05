@@ -1,0 +1,38 @@
+services:
+  comfyui:
+    build:
+      context: .
+    image: pika-h3-flex-comfyui:latest
+    ports:
+      - "8188:8188"
+    gpus: all
+    volumes:
+      - ./models:/opt/ComfyUI/models
+      - ./input:/opt/ComfyUI/input
+      - ./output:/opt/ComfyUI/output
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8188/system_stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  batch:
+    image: pika-h3-flex-comfyui:latest
+    entrypoint: ["python3", "/workspace/batch_excel.py"]
+    profiles: ["batch"]
+    depends_on:
+      comfyui:
+        condition: service_healthy
+    environment:
+      COMFY_URL: http://comfyui:8188
+      REPORT_TIMEZONE: Asia/Ho_Chi_Minh
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google-service-account.json
+      GOOGLE_DRIVE_FOLDER_ID: ${GOOGLE_DRIVE_FOLDER_ID:-}
+    volumes:
+      - ./data:/data
+      - ./output:/opt/ComfyUI/output
+      - ./secrets/google-service-account.json:/run/secrets/google-service-account.json:ro
+    gpus: all
+    command: ["--input", "/data/input.xlsx", "--output", "/data/result.xlsx", "--workflow", "/workspace/video_pika_h3_flex_t2v_test.json", "--download-dir", "/data/videos"]
+
