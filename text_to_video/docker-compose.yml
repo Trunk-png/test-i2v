@@ -1,0 +1,32 @@
+services:
+  comfyui:
+    build: .
+    image: pika-h3-text-ui:latest
+    command: ["python3", "/opt/ComfyUI/main.py", "--listen", "0.0.0.0", "--port", "8188"]
+    working_dir: /opt/ComfyUI
+    ports: ["8188:8188"]
+    gpus: all
+    volumes:
+      - ./models:/opt/ComfyUI/models
+      - ./comfy_output:/opt/ComfyUI/output
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8188/system_stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  web:
+    image: pika-h3-text-ui:latest
+    command: ["python3", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    working_dir: /app
+    ports: ["8000:8000"]
+    environment:
+      COMFY_URL: http://comfyui:8188
+      WORKFLOW_PATH: /app/workflow_text_only.json
+      OUTPUT_DIR: /app/outputs
+    volumes:
+      - ./outputs:/app/outputs
+    depends_on:
+      comfyui:
+        condition: service_healthy
+

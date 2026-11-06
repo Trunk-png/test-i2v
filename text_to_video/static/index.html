@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tạo video từ mô tả bằng Pika H3 Flex và ComfyUI">
+  <title>Pika Motion Studio</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Pika Motion Studio">
+      <span class="brand-mark">P</span>
+      <span>PIKA MOTION <em>STUDIO</em></span>
+    </a>
+    <div class="system-status"><span id="healthDot" class="status-dot"></span><span id="healthText">Đang kết nối GPU</span></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">TEXT → MOTION / H3 FLEX</p>
+      <h1>Biến một ý tưởng<br>thành <span>chuyển động.</span></h1>
+      <p class="intro">Mô tả cảnh quay, hành động và không khí. Studio sẽ dựng video trực tiếp trên GPU của bạn.</p>
+    </section>
+
+    <section class="workspace" aria-label="Trình tạo video">
+      <form id="generateForm" class="composer">
+        <div class="field-head">
+          <label for="prompt">Mô tả video</label>
+          <span id="charCount">0 / 4000</span>
+        </div>
+        <textarea id="prompt" maxlength="4000" required placeholder="Ví dụ: A cinematic tracking shot of a red fox running through a misty pine forest at sunrise, soft volumetric light, natural motion..."></textarea>
+        <div class="controls">
+          <label>Thời lượng
+            <select id="duration">
+              <option value="3">3 giây</option>
+              <option value="5" selected>5 giây</option>
+              <option value="8">8 giây</option>
+              <option value="10">10 giây</option>
+              <option value="15">15 giây</option>
+            </select>
+          </label>
+          <label>Seed <span>(tùy chọn)</span>
+            <input id="seed" type="number" min="0" placeholder="Ngẫu nhiên">
+          </label>
+          <button id="generateButton" type="submit"><span>Tạo video</span><i>↗</i></button>
+        </div>
+        <p id="formError" class="error" role="alert"></p>
+      </form>
+
+      <div class="result-panel">
+        <div id="emptyState" class="empty-state">
+          <div class="frame-icon"><span></span></div>
+          <h2>Khung hình đang chờ</h2>
+          <p>Video của bạn sẽ xuất hiện tại đây.</p>
+        </div>
+        <div id="progressState" class="progress-state hidden" aria-live="polite">
+          <div class="orb"><span></span></div>
+          <p class="render-label">RENDERING</p>
+          <h2 id="progressMessage">Đang chuẩn bị workflow</h2>
+          <div class="progress-track"><span id="progressBar"></span></div>
+          <p><strong id="progressValue">0%</strong> · Không đóng cửa sổ này</p>
+        </div>
+        <div id="videoState" class="video-state hidden">
+          <video id="resultVideo" controls playsinline></video>
+          <div class="video-meta">
+            <div><span>HOÀN TẤT</span><strong id="elapsedTime"></strong></div>
+            <a id="downloadLink" download>Tải video ↓</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>LOCAL GPU PIPELINE</span><span>COMFYUI × PIKA H3 FLEX</span></footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>
+
